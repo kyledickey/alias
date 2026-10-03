@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Alias
 
-## Getting Started
+A party game about fake names and wrong guesses. Live at [alias.party](https://alias.party).
 
-First, run the development server:
+## Stack
+
+- **Frontend:** React SPA built with [Vite+](https://viteplus.dev) (`src/`)
+- **Backend:** [Convex](https://convex.dev) for game state, [Better Auth](https://better-auth.com) (Google) running inside Convex (`convex/`)
+- **Server:** a small Go binary (`server/`) that embeds the built SPA and reverse-proxies `/api/auth/*` to the Convex site URL, so auth cookies stay first-party
+
+## Development
+
+Requires [Bun](https://bun.sh), Node 22+, and Go 1.25+.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev   # Vite on :3000 + convex dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+CONVEX_DEPLOYMENT=...
+VITE_CONVEX_URL=https://<deployment>.convex.cloud
+CONVEX_SITE_URL=https://<deployment>.convex.site   # used by the Vite dev proxy and the Go server
+VITE_VISITORS_TOKEN=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+In dev, Vite proxies `/api/auth` to `CONVEX_SITE_URL`, same as the Go server does in production.
 
-## Learn More
+Other scripts: `bun run check` (format + lint + type-check), `bun run format`, `bun run build`.
 
-To learn more about Next.js, take a look at the following resources:
+## Production
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+bun run build                 # builds the SPA into server/dist
+cd server && go build -o alias .
+CONVEX_SITE_URL=https://<deployment>.convex.site ./alias
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Or with Docker:
 
-## Deploy on Vercel
+```bash
+docker build \
+  --build-arg VITE_CONVEX_URL=https://<deployment>.convex.cloud \
+  --build-arg VITE_VISITORS_TOKEN=... \
+  -t alias .
+docker run -p 8080:8080 -e CONVEX_SITE_URL=https://<deployment>.convex.site alias
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Server env: `CONVEX_SITE_URL` (required), `SITE_URL` (public origin used in game-link previews, default `https://alias.party`), `PORT` (default `8080`), `LOG_LEVEL` (default `info`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## SEO
+
+- Page copy (tagline, description, how-to-play, FAQ) lives in `src/content.ts`. The Vite build turns it into the meta description, JSON-LD structured data, and crawler-readable HTML in `index.html`.
+- The Go server swaps the `<!-- seo:start -->` block for per-game metadata on `/game/{code}`, so shared links preview as "Join my Alias game · CODE" (and aren't indexed).
+- `public/og.png` and the PNG icons are rendered from `scripts/og/og.html`: `npx playwright install chromium && node scripts/og/render.mjs`.
+
+The Convex deployment needs `SITE_URL` set to the public origin (e.g. `https://alias.party`), plus `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
