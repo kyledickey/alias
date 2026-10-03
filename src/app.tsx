@@ -1,4 +1,4 @@
-import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import { type AuthClient, ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { ConvexReactClient } from "convex/react";
 import { Toaster } from "sonner";
 import { Redirect, Route, Switch } from "wouter";
@@ -9,9 +9,15 @@ import Home from "@/pages/home";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL ?? "");
 
+// Type-only cast: better-auth >=1.6.18 renamed its client return types and
+// @convex-dev/better-auth's AuthClient no longer matches them. Runtime is
+// unaffected. Remove once https://github.com/get-convex/better-auth/issues/420
+// is fixed.
+const convexAuthClient = authClient as unknown as AuthClient;
+
 export function App() {
     return (
-        <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+        <ConvexBetterAuthProvider client={convex} authClient={convexAuthClient}>
             <Switch>
                 <Route path="/" component={Home} />
                 <Route path="/game/:id">{({ id }) => <GamePage key={id} id={id} />}</Route>
