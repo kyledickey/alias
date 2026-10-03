@@ -4,7 +4,7 @@ import { defineRailway, github, preserve, project, service } from "railway/iac";
 
 export default defineRailway(() => {
     const web = service("web", {
-        source: github("dickeyy/alias", { branch: "main" }),
+        source: github("kyledickey/alias", { branch: "main" }),
         // Multi-stage build: bun builds the SPA, Go embeds it in one binary
         build: { builder: "DOCKERFILE", dockerfilePath: "Dockerfile" },
         healthcheck: "/healthz",
