@@ -1,0 +1,21 @@
+.git
+.gitignore
+.DS_Store
+**/.DS_Store
+node_modules
+**/node_modules
+.next
+out
+build
+dist
+coverage
+.vercel
+.env*
+*.log
+*.tsbuildinfo
+Dockerfile
+.dockerignore
+.cursorignore
+.claude
+# Built by the bun stage inside the image; never use a stale local build.
+server/dist

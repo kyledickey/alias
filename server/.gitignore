@@ -1,0 +1,3 @@
+# Vite build output (embedded at compile time); keep the placeholder so the package compiles.
+/dist/*
+!/dist/.gitkeep
