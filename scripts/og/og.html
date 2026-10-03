@@ -1,0 +1,189 @@
+<!doctype html>
+<!--
+    Template for public/og.png (1200x630). Regenerate after design changes:
+    open this file in a browser at exactly 1200x630 and screenshot it, or run
+    scripts/og/render.mjs (needs Playwright).
+-->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wdth,wght,ROND@6..144,100..151,400..1000,0..100&display=block"
+        />
+        <style>
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                width: 1200px;
+                height: 630px;
+                overflow: hidden;
+            }
+            body {
+                position: relative;
+                background: #2f5ea8;
+                color: #f9f8ff;
+                font-family: "Google Sans Flex", sans-serif;
+                font-variation-settings: "ROND" 100;
+            }
+            .shape {
+                position: absolute;
+                display: grid;
+                place-items: center;
+                aspect-ratio: 1;
+            }
+            .shape > i {
+                position: absolute;
+                inset: 0;
+                background: currentColor;
+            }
+            .shape > b {
+                position: relative;
+                font-size: 0.42em;
+                font-weight: 900;
+                font-stretch: 125%;
+            }
+            .content {
+                position: absolute;
+                left: 72px;
+                bottom: 64px;
+                display: flex;
+                flex-direction: column;
+                gap: 22px;
+            }
+            .wordmark {
+                position: relative;
+                font-size: 232px;
+                font-weight: 900;
+                font-stretch: 125%;
+                line-height: 0.8;
+                letter-spacing: -0.035em;
+            }
+            /* Anchored to the dotless i, like the app's wordmark */
+            .i {
+                position: relative;
+                display: inline-block;
+            }
+            .tittle {
+                position: absolute;
+                top: -0.02em;
+                left: 50%;
+                width: 0.26em;
+                translate: -50% 0;
+                color: #84efba;
+            }
+            .tagline {
+                max-width: 620px;
+                font-size: 50px;
+                font-weight: 750;
+                font-stretch: 112%;
+                line-height: 1.05;
+            }
+            .meta {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                margin-top: 10px;
+                font-size: 26px;
+                font-weight: 650;
+            }
+            .pill {
+                padding: 12px 26px;
+                border-radius: 999px;
+                background: #84efba;
+                color: #003825;
+                font-weight: 800;
+                font-stretch: 110%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="shapes"></div>
+        <div class="content">
+            <div class="wordmark">
+                al<span class="i">ı<span class="shape tittle"></span></span>as
+            </div>
+            <p class="tagline">A party game about fake names and wrong guesses.</p>
+            <div class="meta">
+                <span class="pill">alias.party</span>
+                <span>Free · No app · 4+ players</span>
+            </div>
+        </div>
+
+        <script>
+            // Same polar shape generator as src/lib/shapes.ts
+            const N = 96;
+            const TAU = Math.PI * 2;
+            const cookie = (l, d) => (t) => 1 + d * Math.cos(l * t);
+            const burst = (p, d, s) => (t) =>
+                1 + d * (2 * Math.abs(Math.cos((p / 2) * t)) ** s - 1);
+            const petals = (c, d, s) => (t) => 1 + d * Math.abs(Math.cos((c / 2) * t)) ** s;
+            const polygon = (n, k) => (t) => {
+                const seg = TAU / n;
+                const local = (((t % seg) + seg) % seg) - seg / 2;
+                return (Math.cos(Math.PI / n) / Math.cos(local)) ** (1 - k);
+            };
+            function clip(f, rot = 0) {
+                const pts = [];
+                for (let i = 0; i < N; i++) {
+                    const t = (i / N) * TAU;
+                    const a = t + rot - Math.PI / 2;
+                    pts.push([f(t) * Math.cos(a), f(t) * Math.sin(a)]);
+                }
+                const e = Math.max(...pts.map(([x, y]) => Math.max(Math.abs(x), Math.abs(y))));
+                return `polygon(${pts.map(([x, y]) => `${50 + (x * 50) / e}% ${50 + (y * 50) / e}%`).join(",")})`;
+            }
+            const SHAPES = {
+                cookie12: clip(cookie(12, 0.045)),
+                cookie9: clip(cookie(9, 0.06)),
+                clover4: clip(petals(4, 0.42, 0.7), Math.PI / 4),
+                flower: clip(petals(6, 0.3, 0.8)),
+                sunny: clip(burst(8, 0.09, 1.4)),
+                burst: clip(burst(12, 0.15, 2.4)),
+                gem: clip(polygon(6, 0.45), Math.PI / 6),
+            };
+
+            // [shape, left, top, size, color, rotation, label]
+            const placed = [
+                ["cookie12", 770, -230, 560, "#84efba", 8],
+                ["clover4", 1010, 330, 330, "#8cb3ff", 20],
+                ["burst", 690, 70, 70, "#006d49", 0],
+                ["sunny", 1080, 220, 96, "#92fdc7", 12],
+                // A few "players", hiding behind question marks
+                ["flower", 845, 300, 150, "#ff8fc2", -10, "?", "#5c0035"],
+                ["cookie9", 690, 430, 118, "#ffb86b", 6, "?", "#4a2500"],
+                ["gem", 960, 70, 104, "#f9f8ff", 0, "?", "#05438d"],
+            ];
+            const root = document.getElementById("shapes");
+            for (const [name, left, top, size, color, rot, label, ink] of placed) {
+                const el = document.createElement("div");
+                el.className = "shape";
+                Object.assign(el.style, {
+                    left: `${left}px`,
+                    top: `${top}px`,
+                    width: `${size}px`,
+                    fontSize: `${size}px`,
+                    color: ink ?? color,
+                });
+                const fill = document.createElement("i");
+                fill.style.clipPath = SHAPES[name];
+                fill.style.background = color;
+                fill.style.rotate = `${rot}deg`;
+                el.append(fill);
+                if (label) {
+                    const b = document.createElement("b");
+                    b.textContent = label;
+                    el.append(b);
+                }
+                root.append(el);
+            }
+            const tittle = document.querySelector(".tittle");
+            const ti = document.createElement("i");
+            ti.style.clipPath = SHAPES.sunny;
+            tittle.append(ti);
+        </script>
+    </body>
+</html>

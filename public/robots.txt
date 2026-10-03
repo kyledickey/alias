@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+# Game lobbies are short-lived and private to each party
+Disallow: /game/
+Disallow: /api/
+
+Sitemap: https://alias.party/sitemap.xml
