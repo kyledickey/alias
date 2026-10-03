@@ -1,0 +1,329 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+}
+
+/* Hero: one bold poster panel with everything you need on it */
+
+.hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3rem;
+    min-height: calc(100svh - 16px);
+    margin: 8px;
+    padding: 2rem 1.25rem 1.25rem;
+    overflow: hidden;
+    border-radius: var(--shape-3xl);
+    background: var(--primary);
+    color: var(--on-primary);
+    --tittle: var(--tertiary-fixed-dim);
+}
+
+/* Same deep poster in dark mode (dark "primary" is a pale tone) */
+@media (prefers-color-scheme: dark) {
+    .hero {
+        background: var(--on-primary-fixed-variant);
+        color: var(--primary-fixed);
+    }
+}
+
+.shapes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.heroShape {
+    position: absolute;
+    animation: pop 1000ms var(--spring-bouncy) calc(200ms + var(--i) * 140ms) both;
+}
+
+.heroShape:nth-child(1) {
+    top: -5rem;
+    right: -6rem;
+    width: 17rem;
+}
+
+.heroShape:nth-child(2) {
+    top: 13rem;
+    right: -4rem;
+    width: 9rem;
+}
+
+.heroShape:nth-child(3) {
+    top: 6.5rem;
+    left: 1.5rem;
+    width: 4.5rem;
+}
+
+.heroShape:nth-child(4) {
+    top: 2.5rem;
+    left: 42%;
+    width: 2.5rem;
+}
+
+.heroText {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: auto;
+}
+
+.tagline {
+    max-width: 16ch;
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    animation-delay: 300ms;
+}
+
+.actions {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.join :global(.field) {
+    height: 96px;
+    padding-left: 32px;
+    padding-right: 20px;
+    background: var(--primary-fixed);
+    color: var(--on-primary-fixed);
+}
+
+.join :global(.field) input {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.join :global(.field) input::placeholder {
+    font-family: var(--font);
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--on-primary-fixed);
+    opacity: 0.55;
+}
+
+/* Field colors are "fixed" roles, so match the disabled state to them */
+.join :global(.btn:disabled) {
+    background: color-mix(in srgb, var(--on-primary-fixed) 10%, transparent);
+    color: color-mix(in srgb, var(--on-primary-fixed) 40%, transparent);
+}
+
+.or {
+    display: none;
+}
+
+.host {
+    display: flex;
+    min-height: 96px;
+}
+
+.host > :global(.btn) {
+    flex: 1;
+    background: var(--tertiary-fixed-dim);
+    color: var(--on-tertiary-fixed-variant);
+}
+
+.hostSkeleton {
+    flex: 1;
+    border-radius: var(--shape-full);
+    background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+/* How to play */
+
+.main {
+    width: 100%;
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 0;
+}
+
+.how {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem 0.5rem;
+}
+
+.howTitle {
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+}
+
+.steps {
+    display: grid;
+    gap: 1.75rem 3rem;
+    padding: 0;
+    list-style: none;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.stepShape {
+    width: 72px;
+    transition: scale 500ms var(--spring-bouncy);
+}
+
+.step:hover .stepShape {
+    scale: 1.12;
+}
+
+.stepNum {
+    font-size: 1.75rem;
+    font-weight: 900;
+    font-stretch: 125%;
+    font-variation-settings: "ROND" 100;
+    line-height: 1;
+}
+
+.step p {
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    color: var(--on-surface-variant);
+}
+
+/* FAQ: expandable cards that morph shape and color when open */
+
+.faq {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 3rem 0.5rem 1rem;
+}
+
+.faqList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.qa {
+    border-radius: var(--shape-md);
+    background: var(--surface-container);
+    transition:
+        border-radius 500ms var(--spring),
+        background-color 300ms var(--ease-emphasized);
+}
+
+.qa:first-child {
+    border-top-left-radius: var(--shape-xl);
+    border-top-right-radius: var(--shape-xl);
+}
+
+.qa:last-child {
+    border-bottom-left-radius: var(--shape-xl);
+    border-bottom-right-radius: var(--shape-xl);
+}
+
+.qa[open] {
+    border-radius: var(--shape-xl);
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+}
+
+.qa summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.qa summary::-webkit-details-marker {
+    display: none;
+}
+
+.qa h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-stretch: 108%;
+}
+
+.qaIcon {
+    transition: rotate 450ms var(--spring-bouncy);
+}
+
+.qa[open] .qaIcon {
+    rotate: 135deg;
+}
+
+.qa p {
+    max-width: 60ch;
+    padding: 0 1.5rem 1.5rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+}
+
+@media (min-width: 720px) {
+    .hero {
+        margin: 12px;
+        min-height: calc(100svh - 24px);
+        padding: 3rem;
+    }
+
+    .main {
+        padding: 3rem 2rem 0;
+    }
+
+    .steps {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .heroShape:nth-child(1) {
+        top: -9rem;
+        right: -8rem;
+        width: 30rem;
+    }
+
+    .heroShape:nth-child(2) {
+        top: auto;
+        bottom: -7rem;
+        right: 22rem;
+        width: 18rem;
+    }
+
+    .heroShape:nth-child(3) {
+        top: auto;
+        left: auto;
+        right: 6rem;
+        bottom: 12rem;
+        width: 9rem;
+    }
+
+    .heroShape:nth-child(4) {
+        top: 4rem;
+        left: auto;
+        right: 30rem;
+        width: 4rem;
+    }
+}
+
+@media (min-width: 1100px) {
+    .hero {
+        padding: 3.5rem 4rem 4rem;
+    }
+
+    .actions {
+        grid-template-columns: minmax(0, 26rem) max-content minmax(0, 26rem);
+        justify-content: start;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    .or {
+        display: block;
+        font-size: 1.25rem;
+        font-weight: 700;
+        opacity: 0.75;
+    }
+}

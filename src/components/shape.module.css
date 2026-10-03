@@ -1,0 +1,34 @@
+.shape {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    aspect-ratio: 1;
+}
+
+.fill {
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    transition:
+        clip-path 650ms var(--spring-bouncy),
+        background-color 400ms var(--ease-emphasized);
+}
+
+.spin {
+    animation: spin var(--spin) linear infinite var(--spin-dir);
+}
+
+.content {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 18%;
+    text-align: center;
+}
+
+@keyframes spin {
+    to {
+        rotate: 360deg;
+    }
+}

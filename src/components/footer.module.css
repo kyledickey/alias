@@ -1,0 +1,18 @@
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+}
+
+.footer a {
+    border-radius: var(--shape-sm);
+    transition: color 150ms;
+}
+
+.footer a:hover {
+    color: var(--primary);
+}

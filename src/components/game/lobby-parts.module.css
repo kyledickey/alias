@@ -1,0 +1,29 @@
+.shapes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    --player-size: 68px;
+}
+
+.player {
+    width: var(--player-size);
+}
+
+.mystery {
+    font-size: calc(var(--player-size) * 0.4);
+    font-weight: 900;
+    font-stretch: 125%;
+    font-variation-settings: "ROND" 100;
+    line-height: 1;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.actions :global(.btn) {
+    width: 100%;
+}

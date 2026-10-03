@@ -1,0 +1,139 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4vmin;
+    padding: 5vmin;
+    overflow: hidden;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    animation: present-in 600ms var(--spring) both;
+}
+
+@keyframes present-in {
+    from {
+        opacity: 0;
+        scale: 0.96;
+    }
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+.decor {
+    position: absolute;
+    top: -30vmin;
+    left: -24vmin;
+    width: 70vmin;
+    opacity: 0.12;
+    pointer-events: none;
+}
+
+.exit {
+    position: absolute;
+    top: 2.5vmin;
+    right: 2.5vmin;
+    z-index: 1;
+    background: color-mix(in srgb, var(--on-primary-container) 10%, transparent);
+    color: var(--on-primary-container);
+}
+
+.info {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5vmin;
+    min-height: 0;
+}
+
+.info > :first-child {
+    font-size: clamp(1.75rem, 4vmin, 3rem);
+}
+
+.label {
+    font-size: clamp(1.25rem, 3vmin, 2.25rem);
+    font-weight: 600;
+    opacity: 0.75;
+}
+
+.host {
+    font-size: clamp(2.5rem, 7.5vmin, 6.5rem);
+    overflow-wrap: anywhere;
+}
+
+.code {
+    font-size: clamp(4rem, 15vmin, 13rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.04em;
+}
+
+.players {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2vmin;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-size: clamp(1.25rem, 2.8vmin, 2rem);
+    font-weight: 650;
+}
+
+.countNum {
+    font-size: 2.4em;
+    font-weight: 900;
+    font-stretch: 125%;
+    font-variation-settings: "ROND" 100;
+    line-height: 0.9;
+}
+
+.shapes {
+    --player-size: clamp(48px, 6vmin, 80px);
+}
+
+.actions {
+    max-width: 40rem;
+}
+
+/* QR fills the full height on the right */
+.qr {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    min-height: 0;
+}
+
+.qr svg {
+    width: auto;
+    height: 100%;
+    max-height: 88vmin;
+    aspect-ratio: 1;
+}
+
+/* Portrait or narrow screens: stack, QR on top */
+@media (max-aspect-ratio: 1/1) {
+    .overlay {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .qr {
+        order: -1;
+        justify-content: center;
+        height: auto;
+    }
+
+    .qr svg {
+        width: min(100%, 50vh);
+        height: auto;
+    }
+}

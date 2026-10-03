@@ -1,0 +1,69 @@
+.wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    font-weight: 900;
+    font-stretch: 125%;
+    font-variation-settings: "ROND" 100;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    user-select: none;
+}
+
+.sm {
+    font-size: 1.75rem;
+}
+
+.hero {
+    font-size: clamp(6rem, 24vw, 15rem);
+    line-height: 0.8;
+}
+
+.letter {
+    position: relative;
+    display: inline-block;
+}
+
+.hero .letter {
+    /* backwards, not both: a held fill would block the hover transition */
+    animation: breathe-in 1100ms var(--spring-bouncy) backwards;
+    transition:
+        font-weight 500ms var(--spring-bouncy),
+        font-stretch 500ms var(--spring-bouncy),
+        translate 500ms var(--spring-bouncy);
+}
+
+.hero .letter:hover {
+    font-weight: 500;
+    font-stretch: 151%;
+    translate: 0 -0.04em;
+}
+
+.tittle {
+    position: absolute;
+    top: -0.02em;
+    left: 50%;
+    width: 0.26em;
+    translate: -50% 0;
+    color: var(--tittle, var(--tertiary));
+}
+
+.sm .tittle {
+    top: -0.06em;
+    width: 0.3em;
+}
+
+/* Letters inflate from thin and narrow to heavy and wide */
+@keyframes breathe-in {
+    from {
+        opacity: 0;
+        font-weight: 400;
+        font-stretch: 100%;
+        translate: 0 0.15em;
+    }
+    to {
+        opacity: 1;
+        font-weight: 900;
+        font-stretch: 125%;
+        translate: 0 0;
+    }
+}
