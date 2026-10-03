@@ -19,5 +19,8 @@ export default defineSchema({
             v.literal("round_over"),
             v.literal("inactive"),
         ),
+        // Round timer, in ms since epoch
+        startedAt: v.optional(v.number()),
+        endedAt: v.optional(v.number()),
     }).index("by_code", ["code"]),
 });

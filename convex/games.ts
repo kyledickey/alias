@@ -57,6 +57,7 @@ export const updateGameState = mutation({
 
         await ctx.db.patch(game._id, {
             state: args.state,
+            ...(args.state === "active" && { startedAt: Date.now(), endedAt: undefined }),
         });
 
         return game;
@@ -82,6 +83,8 @@ export const newRound = mutation({
             round: game.round + 1,
             aliases: [],
             state: "lobby",
+            startedAt: undefined,
+            endedAt: undefined,
         });
 
         return game;
@@ -102,6 +105,7 @@ export const checkForWinner = internalMutation({
         if (game.aliases.filter((a) => !a.eliminated).length === 1) {
             await ctx.db.patch(game._id, {
                 state: "round_over",
+                endedAt: Date.now(),
             });
         }
 
