@@ -287,3 +287,41 @@ func TestParseSiteURL(t *testing.T) {
 		}
 	}
 }
+
+// Convex's site is behind Cloudflare and rejects requests carrying our zone's
+// CF-* headers ("error code: 1000"), so the proxy must drop them.
+func TestAuthProxyStripsCloudflareHeaders(t *testing.T) {
+	var got http.Header
+	convex := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got = r.Header.Clone()
+	}))
+	defer convex.Close()
+
+	req := httptest.NewRequest("GET", "/api/auth/get-session", nil)
+	for k, v := range map[string]string{
+		"CF-Connecting-IP": "203.0.113.7",
+		"CF-Ray":           "abc-DEN",
+		"CF-Visitor":       `{"scheme":"https"}`,
+		"CF-IPCountry":     "US",
+		"CDN-Loop":         "cloudflare",
+		"True-Client-IP":   "203.0.113.7",
+		"X-Forwarded-For":  "203.0.113.7",
+		"Cookie":           "session=xyz",
+	} {
+		req.Header.Set(k, v)
+	}
+	newTestServer(t, convex).ServeHTTP(httptest.NewRecorder(), req)
+
+	for name := range got {
+		lower := strings.ToLower(name)
+		if strings.HasPrefix(lower, "cf-") || lower == "cdn-loop" || lower == "true-client-ip" {
+			t.Errorf("forwarded Cloudflare header %s", name)
+		}
+	}
+	if got.Get("Cookie") != "session=xyz" {
+		t.Error("cookie not forwarded")
+	}
+	if xff := got.Get("X-Forwarded-For"); !strings.HasPrefix(xff, "203.0.113.7") {
+		t.Errorf("X-Forwarded-For = %q, want the real client first", xff)
+	}
+}

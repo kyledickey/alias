@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -22,7 +23,11 @@ func newAuthProxy(logger *slog.Logger, target *url.URL) http.Handler {
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(pr *httputil.ProxyRequest) {
 			pr.SetURL(target)
+			// Keep the real client chain from Railway's edge so better-auth's
+			// rate limiting sees users, not our edge IP.
+			pr.Out.Header["X-Forwarded-For"] = pr.In.Header["X-Forwarded-For"]
 			pr.SetXForwarded()
+			stripCloudflareHeaders(pr.Out.Header)
 			pr.Out.Host = target.Host
 			// Mirrors the previous Next.js handler, which effectively disables
 			// upstream compression.
@@ -51,4 +56,17 @@ func newAuthProxy(logger *slog.Logger, target *url.URL) http.Handler {
 			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		}
 	})
+}
+
+// stripCloudflareHeaders removes headers Cloudflare adds at our edge. Convex's
+// site is also behind Cloudflare, which rejects requests that arrive carrying
+// another zone's CF-* headers with "error code: 1000".
+func stripCloudflareHeaders(h http.Header) {
+	for name := range h {
+		if strings.HasPrefix(strings.ToLower(name), "cf-") {
+			h.Del(name)
+		}
+	}
+	h.Del("CDN-Loop")
+	h.Del("True-Client-IP")
 }
